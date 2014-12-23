@@ -12,7 +12,7 @@ import pythoncom
 import Analysis
 import Database
 
-from win32com.shell import shell
+from win32com.shell import shell  # @UnresolvedImport
 from win32com import storagecon
 from ctypes import windll
 
@@ -119,22 +119,22 @@ class FileProperties:
 
     def propertyDict(self, property_set_storage, fmtid):
         properties = {}
-        PROPERTIES = {  pythoncom.FMTID_SummaryInformation : dict (
+        PROPERTIES = {  pythoncom.FMTID_SummaryInformation : dict (  # @UndefinedVariable
                         (getattr (storagecon, d), d) for d in dir (storagecon) if d.startswith ("PIDSI_")),
-                        pythoncom.FMTID_DocSummaryInformation : dict (
+                        pythoncom.FMTID_DocSummaryInformation : dict (  # @UndefinedVariable
                         (getattr (storagecon, d), d) for d in dir (storagecon) if d.startswith ("PIDDSI_"))
                       }
         STORAGE_READ = storagecon.STGM_READ | storagecon.STGM_SHARE_EXCLUSIVE
 
         try:
             property_storage = property_set_storage.Open (fmtid, STORAGE_READ)
-        except pythoncom.com_error, error:
+        except pythoncom.com_error, error:  # @UndefinedVariable
             if error.strerror == 'STG_E_FILENOTFOUND':
                 return {}
             else:
                 raise
 
-        for name, property_id, vartype in property_storage:
+        for name, property_id, vartype in property_storage:  # @UnusedVariable
             if name is None:
                 name = PROPERTIES.get (fmtid, {}).get (property_id, None)
             if name is None:
@@ -152,20 +152,20 @@ class FileProperties:
         return properties
 
     def propertySets(self, filepath):
-        FORMATS = {     pythoncom.FMTID_SummaryInformation : "SummaryInformation",
-                        pythoncom.FMTID_DocSummaryInformation : "DocSummaryInformation",
-                        pythoncom.FMTID_UserDefinedProperties : "UserDefinedProperties"
+        FORMATS = {     pythoncom.FMTID_SummaryInformation : "SummaryInformation",  # @UndefinedVariable
+                        pythoncom.FMTID_DocSummaryInformation : "DocSummaryInformation",  # @UndefinedVariable
+                        pythoncom.FMTID_UserDefinedProperties : "UserDefinedProperties"  # @UndefinedVariable
                   }
 
-        pidl, flags = shell.SHILCreateFromPath (os.path.abspath (filepath), 0)
+        pidl, flags = shell.SHILCreateFromPath (os.path.abspath (filepath), 0)  # @UnusedVariable
         try:
-            property_set_storage = shell.SHGetDesktopFolder ().BindToStorage (pidl, None, pythoncom.IID_IPropertySetStorage)
+            property_set_storage = shell.SHGetDesktopFolder ().BindToStorage (pidl, None, pythoncom.IID_IPropertySetStorage)  # @UndefinedVariable
 
-            for fmtid, clsid, flags, ctime, mtime, atime in property_set_storage:
+            for fmtid, clsid, flags, ctime, mtime, atime in property_set_storage:  # @UnusedVariable
                 yield FORMATS.get (fmtid, unicode (fmtid)), self.propertyDict (property_set_storage, fmtid)
 
-                if fmtid == pythoncom.FMTID_DocSummaryInformation:
-                    fmtid = pythoncom.FMTID_UserDefinedProperties
+                if fmtid == pythoncom.FMTID_DocSummaryInformation:  # @UndefinedVariable
+                    fmtid = pythoncom.FMTID_UserDefinedProperties  # @UndefinedVariable
                     user_defined_properties = self.propertyDict (property_set_storage, fmtid)
 
                     if user_defined_properties:
@@ -183,7 +183,7 @@ class FileSystem:
         dontCheck = ['hiberfil.sys', 'swapfile.sys', 'pagefile.sys']
 
         dWalk = os.walk(startPath + ':\\')
-        for root, dirs, files in dWalk:
+        for root, dirs, files in dWalk:  # @UnusedVariable
             for f in files:
                 try:
                     full_path = root + os.sep + f
@@ -198,7 +198,7 @@ class FileSystem:
 
     def getDrives(self):
         drives = []
-        bitmask = windll.kernel32.GetLogicalDrives()
+        bitmask = windll.kernel32.GetLogicalDrives()  # @UndefinedVariable
 
         for letter in string.uppercase:
             if bitmask & 1:
