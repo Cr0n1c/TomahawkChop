@@ -20,7 +20,7 @@ class SystemInfo:
 
     def getDrive(self):
         self.filesIgnore.append(re.findall('Page File Location(s):(.*?)\r\n', self.cmd)[0].strip())
-        self.primaryHdd = re.findall('Windows Directory:(.*?)\r\n', self.cmd)[0].split(os.sep)[0])
+        self.primaryHdd = re.findall('Windows Directory:(.*?)\r\n', self.cmd)[0].split(os.sep)[0]
 
     def getOS(self):
-        self.os = re.findall('OS Version:(.*?)\r\n', self.cmd)[0].strip())
+        self.os = re.findall('OS Version:(.*?)\r\n', self.cmd)[0].strip()
