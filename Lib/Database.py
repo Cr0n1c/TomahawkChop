@@ -4,11 +4,11 @@ import sys
 
 class Database:
 
-    def __init__(self, db='default.db'):
+    def __init__(self, db=os.path.join('Data', 'default.db')):
         self.db_name = db
-        self.__db_check__()
+        self.__db_check()
 
-    def __create_db__(self):
+    def __create_db(self):
         try:
             self.con = lite.connect(self.db_name)
             self.con.text_factory = str
@@ -27,12 +27,23 @@ class Database:
             print 'Error: %s:' %e.args[0]
             sys.exit(1)
 
-    def __db_check__(self):
+    def __db_check(self):
         if not os.path.exists(self.db_name):
-            self.__create_db__()
+            self.__create_db()
         else:
             self.con = lite.connect(self.db_name)
             self.con.text_factory = str
+
+    def __exist(self, f):
+        with self.con:
+            cur = self.con.cursor()
+            self.execute("SELECT * FROM Files WHERE OnDiskPath = ?", f.fullLocation)
+            data = cur.fetchone()
+
+        if data is None:
+            return False
+        else:
+            return True
 
     def execute(self, data):
         with self.con:
@@ -49,18 +60,3 @@ class Database:
         else:
             pass
         self.con.commit()
-
-
-
-    def __exist__(self, f):
-        with self.con:
-            cur = self.con.cursor()
-            self.execute("SELECT * FROM Files WHERE OnDiskPath = ?", f.fullLocation)
-            data = cur.fetchone()
-
-        if data is None:
-            return False
-        else:
-            return True
-
-

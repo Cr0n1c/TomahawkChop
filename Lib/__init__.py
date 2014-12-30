@@ -43,15 +43,18 @@ class File:
         self.filePath = os.path.split(self.fullLocation)[0]
         self.fileName= os.path.split(self.fullLocation)[-1]
         self.fileExtention = self.fileName.split('.')[-1]
-        self.onDisk = True
         self.file = Empty()
-        self.hash = Hash(self.fullLocation)
-        self.info = FileProperties(self.fullLocation)
-        self.__getFilePEInfo__()
-        self.analysis = Analysis.Analyze(self)
+        self.onDisk = True
+        self.run()
         db.add_entry(self)
 
-    def __getFilePEInfo__(self):
+    def run(self):
+        self.hash = Hash(self.fullLocation)
+        self.info = FileProperties(self.fullLocation)
+        self.peInfo()
+        self.analysis = Analysis.Analyze(self)
+
+    def peInfo(self):
         self.file.pe = Empty()
         self.isPE = False
         self.file.pe.fileVersionMS = ''
@@ -179,7 +182,7 @@ class FileSystem:
         self.files = []
         self.db = Database.Database()
 
-    def __listFiles__(self, startPath):
+    def __listFiles(self, startPath):
         dontCheck = ['hiberfil.sys', 'swapfile.sys', 'pagefile.sys']
 
         dWalk = os.walk(startPath + ':\\')
@@ -209,7 +212,7 @@ class FileSystem:
 
     def dirWalk(self):
         for drive in self.getDrives():
-            self.__listFiles__(drive)
+            self.__listFiles(drive)
 
 
 class Hash:
@@ -220,7 +223,7 @@ class Hash:
         self.md5()
         self.sha1()
 
-    def __hasher__(self, hasher):
+    def __hasher(self, hasher):
         try:
             with open(self.file, 'rb') as afile:
                 buf = afile.read()
@@ -239,9 +242,9 @@ class Hash:
             return hasher.hexdigest()
 
     def md5(self):
-        self.md5 = self.__hasher__(hashlib.md5())
+        self.md5 = self.__hasher(hashlib.md5())
 
     def sha1(self):
-        self.sha1 = self.__hasher__(hashlib.sha1())
+        self.sha1 = self.__hasher(hashlib.sha1())
 
 
